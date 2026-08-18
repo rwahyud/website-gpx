@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /tracks/{trackId} {
+      allow read: if true;
+      allow create: if request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.province is string
+        && request.resource.data.province.size() > 0
+        && request.resource.size() < 100000;
+      allow update, delete: if false;
+
+      match /file/{fileId} {
+        allow read: if true;
+        allow create: if request.resource.data.data is bytes
+          && request.resource.data.data.size() < 1000000
+          && request.resource.size() < 1000000;
+      }
+    }
+  }
+}
